@@ -1,6 +1,8 @@
+import { IData, readComponentById } from "@/utils/Fauna";
 import {
   Box,
   Button,
+  ButtonGroup,
   FormControl,
   FormErrorMessage,
   FormLabel,
@@ -8,18 +10,42 @@ import {
   Textarea,
 } from "@chakra-ui/react";
 import { useFormik } from "formik";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import * as Yup from "yup";
 
 import axios from "axios";
 import { useRouter } from "next/dist/client/router";
 
-const ComponentForm = () => {
+const SingleComponent = ({ component }: { component: IData }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [formData, setFormData] = useState({
+    name: "",
+    description: "",
+    code: "",
+  });
+  useEffect(() => {
+    setFormData({
+      name: component.data.name,
+      description: component.data.description,
+      code: component.data.code,
+    });
+  }, []);
+
+  const deleteComponent = async () => {
+    try {
+      await axios.delete("/api/delete-component", {
+        data: { id: component.id },
+      });
+      router.push("/");
+    } catch (error) {
+      console.error(error);
+    }
+  };
   const router = useRouter();
   const formik = useFormik({
-    initialValues: { name: "", description: "", code: "" },
+    enableReinitialize: true,
+    initialValues: formData,
     validationSchema: Yup.object({
       name: Yup.string().required("Ein Name ist nötig!"),
       description: Yup.string().required("Eine Beschreibung ist nötig!"),
@@ -29,7 +55,8 @@ const ComponentForm = () => {
       // console.log(daten);
       try {
         setLoading(true);
-        await axios.post("/api/create-component", {
+        await axios.put("/api/update-component", {
+          id: component.id,
           name: daten.name,
           description: daten.description,
           code: daten.code,
@@ -93,19 +120,48 @@ const ComponentForm = () => {
           <FormErrorMessage>{formik.errors.code}</FormErrorMessage>
         </FormControl>
 
-        <Button
-          isLoading={loading}
-          as="button"
-          type="submit"
-          colorScheme="red"
-          mt={4}
-          mb={8}
-        >
-          Speichern
-        </Button>
+        <ButtonGroup>
+          <Button
+            isLoading={loading}
+            as="button"
+            type="submit"
+            colorScheme="red"
+            mt={4}
+            mb={8}
+          >
+            Ändern
+          </Button>
+          <Button
+            isLoading={loading}
+            as="button"
+            type="button"
+            colorScheme="red"
+            mt={4}
+            mb={8}
+            variant="outline"
+            onClick={deleteComponent}
+          >
+            Löschen
+          </Button>
+        </ButtonGroup>
       </form>
     </Box>
   );
 };
 
-export default ComponentForm;
+export default SingleComponent;
+
+export async function getServerSideProps(context: any) {
+  try {
+    const id = context.params.id;
+    const component = await readComponentById(id);
+    return {
+      props: { component },
+    };
+  } catch (error) {
+    console.error(error);
+    context.res.statusCode = 302;
+    context.res.setHeader("Location", `/`);
+    return { props: {} };
+  }
+}

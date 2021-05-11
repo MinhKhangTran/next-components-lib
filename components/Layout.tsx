@@ -6,7 +6,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   return (
     <Box my={9} w="90%" mx="auto">
       <Flex align="center">
-        <Heading textAlign="center" color="red.600" fontFamily="mono">
+        <Heading mb={8} textAlign="center" color="red.600" fontFamily="mono">
           Components Lib
         </Heading>
         <Spacer />

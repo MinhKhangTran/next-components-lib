@@ -1,9 +1,10 @@
-import { Box, Button, Heading, Spinner } from "@chakra-ui/react";
+import { Box, Button, Spinner } from "@chakra-ui/react";
 import Head from "next/head";
 import useSWR from "swr";
 import { IData } from "@/utils/Fauna";
 import Component from "@/components/Component";
 import Link from "next/link";
+import { useUser } from "@auth0/nextjs-auth0";
 
 export default function Home() {
   const { data, error, mutate } = useSWR("/api/read-components");
@@ -27,9 +28,11 @@ export default function Home() {
           <Link href="/add">Neue Component einfügen</Link>
         </Button>
         <Box my={8}>
-          {data.map((component: IData) => {
-            return <Component key={component.id} component={component} />;
-          })}
+          {!error &&
+            data &&
+            data.map((component: IData) => {
+              return <Component key={component.id} component={component} />;
+            })}
         </Box>
       </Box>
     </>

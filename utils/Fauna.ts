@@ -8,6 +8,7 @@ interface IComponent {
   name: string;
   description: string;
   code: string;
+  userId: string;
 }
 export interface IData {
   data: IComponent;
@@ -51,10 +52,50 @@ export const createComponent = async (
 ): Promise<IData> => {
   return await faunaClient.query(
     q.Create(q.Collection("components-lib"), {
-      data: code,
-      description,
-      name,
-      userId,
+      data: { code, description, name, userId },
     })
+  );
+};
+//===================================================================================================
+//===================================READ COMPONENT BY ID============================================
+//===================================================================================================
+
+export const readComponentById = async (id: string): Promise<IData> => {
+  const component: IData = await faunaClient.query(
+    q.Get(q.Ref(q.Collection("components-lib"), id))
+  );
+
+  // add a new field id with the value from the ref
+  component.id = component.ref.id;
+  //delete the ref field
+  delete component.ref;
+  return component;
+};
+
+//===================================================================================================
+//===================================UPDATE COMPONENT================================================
+//===================================================================================================
+
+export const updateComponent = async (
+  id: string,
+  code: string,
+  description: string,
+  name: string,
+  userId: string
+): Promise<IData> => {
+  return await faunaClient.query(
+    q.Update(q.Ref(q.Collection("components-lib"), id), {
+      data: { code, description, name, userId },
+    })
+  );
+};
+
+//===================================================================================================
+//===================================DELETE COMPONENT================================================
+//===================================================================================================
+
+export const deleteComponent = async (id: string): Promise<IData> => {
+  return await faunaClient.query(
+    q.Delete(q.Ref(q.Collection("components-lib"), id))
   );
 };
