@@ -37,6 +37,7 @@ export const readComponents = async (): Promise<IData[]> => {
     return component;
   });
   //   console.log(components);
+  //   console.log(components);
   return components;
 };
 
