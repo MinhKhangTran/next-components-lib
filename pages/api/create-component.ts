@@ -22,6 +22,6 @@ export default withApiAuthRequired(async function handler(
     res.status(200).json(createdComponent);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ msg: "Something went wrong 🥲" });
+    res.status(500).json({ msg: "Irgendwas lief schief 🥲" });
   }
 });

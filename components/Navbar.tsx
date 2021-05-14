@@ -18,9 +18,9 @@ const Navbar = () => {
           <Text color="red.400" mr={8}>
             Hi {user.nickname} 😬
           </Text>
-          {/* <Box mr={8}>
-            <Link href="/mySnippets">Meine Components</Link>
-          </Box> */}
+          <Box mr={8}>
+            <Link href="/myComponents">Meine Components</Link>
+          </Box>
 
           <Link href="/api/auth/logout">Logout</Link>
         </Flex>

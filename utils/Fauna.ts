@@ -74,6 +74,33 @@ export const readComponentById = async (id: string): Promise<IData> => {
 };
 
 //===================================================================================================
+//===================================READ COMPONENT BY USER==========================================
+//===================================================================================================
+
+export const readComponentsByUser = async (
+  userId: string
+): Promise<IData[]> => {
+  // read components from db
+  const { data }: { data: IData[] } = await faunaClient.query(
+    q.Map(
+      //paginate with matching index in db
+      q.Paginate(q.Match(q.Index("components_by_user"), userId)),
+      q.Lambda("ref", q.Get(q.Var("ref")))
+    )
+  );
+
+  const components = data.map((component) => {
+    // add a new field id with the value from the ref
+    component.id = component.ref.id;
+    //delete the ref field
+    delete component.ref;
+    return component;
+  });
+
+  return components;
+};
+
+//===================================================================================================
 //===================================UPDATE COMPONENT================================================
 //===================================================================================================
 

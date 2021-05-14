@@ -16,7 +16,7 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>Components Lib</title>
+        <title>Components Lib | Homepage</title>
         <meta
           name="description"
           content="a simple and small app to save components"
